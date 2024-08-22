@@ -1,0 +1,44 @@
+[
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "oi",
+        "resposta": "oi",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "humano ",
+        "resposta": "deswfs",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "qual a cor do mundo ",
+        "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "ia ",
+        "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "bye",
+        "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "oi ",
+        "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "IA",
+        "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
+        "acerto": false
+    }
+]
