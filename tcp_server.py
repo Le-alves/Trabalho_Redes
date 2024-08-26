@@ -4,7 +4,7 @@ __author__ = "Filipe Ribeiro e Lê Alves "
 import socket, sys
 from threading import Thread
 from historico import Historico
-from gerenciadorPerguntas import GerenciadorPerguntas
+from gerenciadorRespostas import GerenciadorRespostas
 
 HOST = '127.0.0.1'  # endereço IP
 PORT = 20000        # Porta utilizada pelo servidor
@@ -12,7 +12,7 @@ BUFFER_SIZE = 1024  # tamanho do buffer para recepção dos dados
 
 
 def on_new_client(clientsocket,addr, historico):
-    gerenciador = GerenciadorPerguntas(historico)
+    gerenciador = GerenciadorRespostas(historico)
 
     while True:
         try:
