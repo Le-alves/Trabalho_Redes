@@ -2,9 +2,10 @@ class GerenciadorPerguntas:
 
     BUFFER_SIZE = 1024
 
-    def __init__(self, historico, modo):
+    def __init__(self, historico):
+        """ Inicializa o Gerenciador com o histórico das interações."""
         self.historico = historico
-        self.modo = modo
+        
     
     def receber_pergunta(self, clientesocket):
         try:
@@ -16,11 +17,25 @@ class GerenciadorPerguntas:
             print("Erro ao receber pergunta", e)
             return None
         
-    def gerar_resposta(self):
-        if self.modo == '1':
-            return"Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------"
-        else: 
-            return input("Digite a resposta que você quer enviar: ")
+    def obter_modo_resposta(self):
+        while True:
+            modo = input("Quem deve responder? (1 - Humano | 2 - IA): ")
+            if modo in ['1','2']:
+                return modo
+            print("Opção inválida. Tente novamente.")
+        
+    def gerar_resposta_humana(self):
+        return input("Digite a resposta que você quer enviar: ")
+    
+    def gerar_resposta_ia(self, pergunta):
+        return print(f"Resposta gerada automaticamente para: {pergunta} (IA)")
+    
+    def gerar_resposta(self, modo, pergunta):
+        if modo == '1':
+            return self.gerar_resposta_humana()
+        else:
+            return self.gerar_resposta_ia(pergunta)
+
         
     def verificar_acerto(self, clientsocket, resposta):
         try: 
@@ -28,7 +43,7 @@ class GerenciadorPerguntas:
             palpite = clientsocket.recv(self.BUFFER_SIZE).decode('utf-8').strip().lower()
 
             #Determinar se o cliente acertou
-            acertou = (palpite =="humano" and self.modo == '2') or (palpite == 'ia' and self.modo == '1')
+            acertou = (palpite =="humano" and self.modo == '1') or (palpite == 'ia' and self.modo == '2')
 
             return acertou 
         except Exception as e:
@@ -36,20 +51,21 @@ class GerenciadorPerguntas:
             return False
         
     def interacao_completa(self, clientsocket, endereco_cliente):
-        texto_recebido = self.receber_pergunta(clientsocket)
-        if not texto_recebido:
+
+        pergunta = self.receber_pergunta(clientsocket)
+        if not pergunta:
             return False
-        
-        resposta = self.gerar_resposta()
+
+        print(pergunta)
+        modo = self.obter_modo_resposta()
+        resposta = self.gerar_resposta(modo, pergunta)
         clientsocket.send(resposta.encode('utf-8'))
 
-        acertou = self.verificar_acerto(clientsocket, resposta)
-
-        #Registrar historico
-        self.historico.adicionar_entrada(endereco_cliente, texto_recebido,resposta, acertou)
-
-        # Feed back para o cliente
+        acertou = self.verificar_acerto(clientsocket, modo)
         feedback = "Você acertou!" if acertou else "Você errou!"
         clientsocket.send(feedback.encode("utf-8"))
 
-        return texto_recebido != "bye"
+        # Registrar no histórico
+        self.historico.adicionar_entrada(endereco_cliente, pergunta, resposta, acertou)
+
+        return pergunta != "bye"

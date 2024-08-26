@@ -40,5 +40,32 @@
         "pergunta": "IA",
         "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
         "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            65343
+        ],
+        "pergunta": "lalala",
+        "resposta": "Resposta gerada por IA --------------------------- (IMPLEMENTANDO)----------------------------",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            49792
+        ],
+        "pergunta": "lololo",
+        "resposta": "foi dessa vez?",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            49857
+        ],
+        "pergunta": "cacacaca",
+        "resposta": "njdjdsnjdssd",
+        "acerto": false
     }
 ]

@@ -11,28 +11,28 @@ PORT = 20000        # Porta utilizada pelo servidor
 BUFFER_SIZE = 1024  # tamanho do buffer para recepção dos dados
 
 
-def on_new_client(clientsocket,addr,modo, historico):
-    gerenciador = GerenciadorPerguntas(historico, modo)
+def on_new_client(clientsocket,addr, historico):
+    gerenciador = GerenciadorPerguntas(historico)
 
     while True:
         try:
-            # Tratar a interação com o cliente
-            if not gerenciador.interacao_completa(clientsocket, addr[0]):
-                print(f'Vai encerrar o socket do cliente {addr[0]}!')
+            # Coordena toda a interação com o cliente
+            sucesso = gerenciador.interacao_completa(clientsocket, addr)
+            if not sucesso:
+                print(f'Encerrando a conexão com o cliente {addr[0]}!')
                 clientsocket.close()
                 return
-        except Exception as error:
-            print("Erro na conexão com o cliente!")
-            return
 
+        except Exception as error:
+            print(f"Erro na conexão com o cliente {addr}: {error}")
+            clientsocket.close()
+            return
 
 def main(argv):
 
-    modo = input("Escolha o modo de operação:\n1 - Automático\n2 - Controlado\nDigite 1 ou 2: ")
-
-    if modo not in ['1', '2']:
-        print("Modo inválido! O servidor será iniciado em modo automático.")
-        modo = '1'
+    print("--------------Bem vindo, servidor---------------------------- ")
+   
+   
 
     historico = Historico()
     try:
@@ -43,7 +43,7 @@ def main(argv):
                 server_socket.listen()
                 clientsocket, addr = server_socket.accept()
                 print('Conectado ao cliente no endereço:', addr)
-                t = Thread(target=on_new_client, args=(clientsocket,addr, modo, historico))
+                t = Thread(target=on_new_client, args=(clientsocket,addr, historico))
                 t.start()   
     except Exception as error:
         print("Erro na execução do servidor!!")
