@@ -2,10 +2,82 @@
     {
         "usuario": [
             "127.0.0.1",
-            50889
+            51004
         ],
-        "pergunta": "bolo",
-        "resposta": "faz",
+        "pergunta": "chuchu",
+        "resposta": "-------------------------Resposta gerada por IA--------------------",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            51004
+        ],
+        "pergunta": "brocolis",
+        "resposta": "humano respondendo ",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            51123
+        ],
+        "pergunta": "sincronizado?",
+        "resposta": "com o humano sim ",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            51128
+        ],
+        "pergunta": "ponto",
+        "resposta": "-------------------------Resposta gerada por IA--------------------",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            51193
+        ],
+        "pergunta": "foi?",
+        "resposta": "foi",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            55774
+        ],
+        "pergunta": "piripipiu",
+        "resposta": "dan\u00e7a da motinha",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            55830
+        ],
+        "pergunta": "ydfdds",
+        "resposta": "jhibdvsjbhidvsji",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            55830
+        ],
+        "pergunta": "dfsfs ss",
+        "resposta": "-------------------------Resposta gerada por IA--------------------",
+        "acerto": false
+    },
+    {
+        "usuario": [
+            "127.0.0.1",
+            55841
+        ],
+        "pergunta": "vgdydsubde",
+        "resposta": "ufeiefnuh",
         "acerto": false
     }
 ]
