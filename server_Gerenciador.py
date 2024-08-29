@@ -1,4 +1,6 @@
 import socket
+from historico  import Historico
+from ranking import Ranking
 
 class Server_Gerenciador:
     
@@ -7,7 +9,9 @@ class Server_Gerenciador:
     def __init__(self, clientsocket, addr):
         self.clientsocket = clientsocket
         self.addr = addr
-        self.palpite_correto = None  # Inicializa o palpite_correto como None
+        self.palpite_correto = None  # Inicializa como None
+        self.historico = Historico()
+        self.ranking = Ranking()
     
     def gerenciar_comunicacao(self):
         try:
@@ -18,7 +22,7 @@ class Server_Gerenciador:
                     break
 
                 # Recebimento da mensagem do cliente    
-                texto_recebido = data.decode('utf-8')  # Converte os bytes em string
+                texto_recebido = data.decode('utf-8')
                 print('Recebido do cliente {} na porta {}: {}'.format(self.addr[0], self.addr[1], texto_recebido))
 
                 # Se a mensagem for "bye", encerrará a conexão
@@ -30,15 +34,14 @@ class Server_Gerenciador:
                 # Responder a pergunta
                 resposta = self.responder_pergunta(texto_recebido)
 
-                # Envia a resposta ao cliente (converte a string em bytes)
+                # Envia a resposta ao cliente
                 self.clientsocket.send(resposta.encode('utf-8')) 
 
-                # Palpite sobre quem respondeu
-                self.verificar_acerto()
+                # Palpite sobre quem respondeu - PASSAR ARGUMENTOS CORRETOS
+                self.verificar_acerto(texto_recebido, resposta)  # Aqui você passa os argumentos corretamente
         except Exception as e:
             print(f"Erro na comunicação com o cliente {self.addr}: {e}")
-        
-        # Fecha o socket ao final da comunicação
+
         self.clientsocket.close()
         print(f"Conexão com o cliente {self.addr} encerrada.")
        
@@ -50,18 +53,31 @@ class Server_Gerenciador:
             self.palpite_correto = "2"
             return "---------------Resposta da IA---------------"
 
-    def verificar_acerto(self):
+    def verificar_acerto(self,texto_recebido, resposta):
         try:
             # Recebe o feedback do cliente
             palpite = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
+
+            #Determina se o cliente acertou ou não 
+            acertou = (palpite == self.palpite_correto)
+            
+            #Atualiza o historico com a pergunta, resposta e se o cliente acertou ou não | IP usado como identificador
+            usuario = self.addr[0]
+            self.historico.adicionar_entrada(usuario, texto_recebido, resposta, acertou) 
+
+            #atualiza o ranking
+            self.ranking.atualizar_ranking(usuario, acertou)
             
             # Verifica se o cliente acertou e envia a resposta de volta ao cliente
-            if palpite == self.palpite_correto:
+            if acertou:
                 mensagem = "Parabéns, você acertou!"
             else:
                 mensagem = "Você errou"
 
             # Envia a mensagem de acerto ou erro ao cliente
             self.clientsocket.send(mensagem.encode('utf-8'))
+
+            #Atualização do historico com o resultado do palpite
+
         except Exception as e:
             print(f"Erro ao processar o feedback: {e}")

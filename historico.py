@@ -2,7 +2,7 @@ import json
 
 class Historico:
 
-    def __init__(self, filename = "historico.json"):
+    def __init__(self, filename = "historico_perguntas.json"):
         self.filename = filename
         self.dados = self.carregar_dados()
 

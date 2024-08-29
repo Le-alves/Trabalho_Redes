@@ -5,6 +5,7 @@ import socket, sys
 from threading import Thread
 from server_Gerenciador import Server_Gerenciador
 
+
 HOST = '127.0.0.1'  # endereço IP
 PORT = 20000        # Porta utilizada pelo servidor
 BUFFER_SIZE = 1024  # tamanho do buffer para recepção dos dados

@@ -1,0 +1,20 @@
+[
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "dcihds",
+        "resposta": "hyscbijjncs",
+        "acerto": true
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "ufewuufweufew",
+        "resposta": "---------------Resposta da IA---------------",
+        "acerto": false
+    },
+    {
+        "usuario": "127.0.0.1",
+        "pergunta": "gfhweifwe",
+        "resposta": "---------------Resposta da IA---------------",
+        "acerto": true
+    }
+]
