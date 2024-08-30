@@ -15,7 +15,7 @@ def main(argv):
 
             # Instancia o Cliente_Gerenciador e delega a interação
             gerenciador = Cliente_Gerenciador(s)
-            gerenciador.enviar_perguntas()
+            gerenciador.menu()
 
     except Exception as error:
         print("Exceção - Programa será encerrado!")

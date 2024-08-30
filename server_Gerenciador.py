@@ -25,6 +25,11 @@ class Server_Gerenciador:
                 texto_recebido = data.decode('utf-8')
                 print('Recebido do cliente {} na porta {}: {}'.format(self.addr[0], self.addr[1], texto_recebido))
 
+                #Verifica se é uma solicitação de ranking
+                if texto_recebido.lower() == "ranking":
+                    self.enviar_ranking()
+                    continue
+
                 # Se a mensagem for "bye", encerrará a conexão
                 if texto_recebido.lower() == 'bye':
                     print('Vai encerrar o socket do cliente {} !'.format(self.addr[0]))
@@ -68,16 +73,34 @@ class Server_Gerenciador:
             #atualiza o ranking
             self.ranking.atualizar_ranking(usuario, acertou)
             
-            # Verifica se o cliente acertou e envia a resposta de volta ao cliente
+            # Verificação
             if acertou:
                 mensagem = "Parabéns, você acertou!"
             else:
                 mensagem = "Você errou"
 
-            # Envia a mensagem de acerto ou erro ao cliente
+            # Envia a mensagem ao cliente
             self.clientsocket.send(mensagem.encode('utf-8'))
-
-            #Atualização do historico com o resultado do palpite
 
         except Exception as e:
             print(f"Erro ao processar o feedback: {e}")
+
+    def enviar_ranking(self):
+
+        try:
+            # Calcula o ranking usando a classe Ranking
+            ranking = self.ranking.exibir_ranking()
+
+            # Verifica se o ranking não é None antes de enviar
+            if ranking:
+                print(f"Enviando ranking ao cliente {self.addr}:")
+                print(ranking)  # Para depuração, remove depois
+                self.clientsocket.send(ranking.encode('utf-8'))
+            else:
+                self.clientsocket.send("Ranking não disponível.".encode('utf-8'))
+        except Exception as e:
+            print(f"Erro ao enviar o ranking: {e}")
+            self.clientsocket.send("Erro ao calcular o ranking.".encode('utf-8'))
+
+       
+
