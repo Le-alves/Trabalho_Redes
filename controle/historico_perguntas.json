@@ -54,5 +54,19 @@
         "pergunta": "esse \u00e9 somente um teste ",
         "resposta": "Resposta do servido para o cliente ",
         "acerto": true
+    },
+    {
+        "usuario": "1111",
+        "ip": "127.0.0.1",
+        "pergunta": "oiii",
+        "resposta": "Hello! How can I assist you today?",
+        "acerto": true
+    },
+    {
+        "usuario": "4587",
+        "ip": "127.0.0.1",
+        "pergunta": "oi, ta ai",
+        "resposta": "to sim",
+        "acerto": true
     }
 ]

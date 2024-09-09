@@ -1,8 +1,10 @@
 class Cliente_Gerenciador:
     BUFFER_SIZE = 1024
 
-    def __init__(self, socket):
+    def __init__(self, socket,callback_mensagem, callback_origem ):
         self.socket = socket
+        self.callback_mensagem = callback_mensagem  # A função de callback para exibir mensagens
+        self.callback_origem = callback_origem
 
     def iniciar_conexao(self):
         nome = input("Digite seu nome para registro no servidor:\n")
@@ -29,11 +31,14 @@ class Cliente_Gerenciador:
             else:
                 print("Opção inválida. Tente novamente.")
     
-    def fazer_pergunta(self):
+    def fazer_pergunta(self,pergunta):
         try:
-            
-                texto = input("Digite o texto a ser enviado ao servidor:\n") #VERIFICAR SE O SERVER_GERENCIADOR TEM TRATAMENTO CASO RECEBA UM "BYE"
-                self.socket.send(texto.encode('utf-8'))  # Envia a pergunta ao servidor
+
+                # Envia a pergunta ao servidor
+                self.socket.send(pergunta.encode('utf-8'))
+                
+                #texto = input("Digite o texto a ser enviado ao servidor:\n") #VERIFICAR SE O SERVER_GERENCIADOR TEM TRATAMENTO CASO RECEBA UM "BYE"
+                #self.socket.send(texto.encode('utf-8'))  # Envia a pergunta ao servidor
 
                 # Recebe a resposta do servidor
                 data = self.socket.recv(self.BUFFER_SIZE)
@@ -42,28 +47,28 @@ class Cliente_Gerenciador:
                     return
 
                 texto_recebido = data.decode('utf-8')  # Converte os bytes em string
-                print('Recebido do servidor:', texto_recebido)
+                self.callback_mensagem(f'Recebido do servidor: {texto_recebido}')
 
                 # Verifica se a conexão deve ser encerrada
                 if texto_recebido.lower() == 'encerrando conexão...':
-                    print('Encerrando o socket cliente!')
+                    self.callback_mensagem('Encerrando o socket cliente!')
                     self.sair()
                     return
                 
-                # Pergunta sobre a origem da resposta
-                origem = input("Você acha que essa resposta veio de um humano ou de uma máquina? (Humano = 1 | Máquina = 2): ")
+                # Pergunta sobre a origem da resposta - Passou para interface grafica
+                origem = self.callback_origem() 
                 self.socket.send(origem.encode('utf-8'))  # Envia a resposta ao servidor
 
                 # Recebe a mensagem de acerto ou erro do servidor
                 feedback = self.socket.recv(self.BUFFER_SIZE)
                 if not feedback:
-                    print("Conexão encerrada pelo servidor.")
+                    self.callback_mensagem("Conexão encerrada pelo servidor.")
                     return
 
                 mensagem_feedback = feedback.decode('utf-8')
-                print('Feedback do servidor:', mensagem_feedback)
+                self.callback_mensagem(f'Feedback do servidor: {mensagem_feedback}')
         except Exception as e:
-            print(f"Erro na comunicação com o servidor: {e}")
+            self.callback_mensagem(f"Erro na comunicação com o servidor: {e}")
 
     def ver_ranking(self):
         try:
