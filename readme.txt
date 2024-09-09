@@ -1,5 +1,5 @@
 Trabalho da disciplina de Redes I da Universidade Federal de Ouro Preto
-Ministrda pelo professor: Felipe Ribeiro
+Ministrada pelo professor: Felipe Ribeiro
 Aluno: Lê Alves 
 
 Informações importantes sobre este trabalho: 

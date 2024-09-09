@@ -4,6 +4,12 @@ class Cliente_Gerenciador:
     def __init__(self, socket):
         self.socket = socket
 
+    def iniciar_conexao(self):
+        nome = input("Digite seu nome para registro no servidor:\n")
+        self.socket.send(nome.encode('utf-8'))  # Envia o nome ao servidor
+        resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
+        print(resposta)  # Confirmação de registro
+
 
     def menu (self):
         while True:
@@ -41,6 +47,7 @@ class Cliente_Gerenciador:
                 # Verifica se a conexão deve ser encerrada
                 if texto_recebido.lower() == 'encerrando conexão...':
                     print('Encerrando o socket cliente!')
+                    self.sair()
                     return
                 
                 # Pergunta sobre a origem da resposta
@@ -76,6 +83,9 @@ class Cliente_Gerenciador:
 
 
     def sair (self):
-        # Fecha o socket ao final da comunicação
+        self.socket.send("bye".encode('utf-8'))
+        resumo = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
+        print(resumo)
         self.socket.close()
         print("Conexão encerrada.")
+        input("Pressione Enter para fechar...")

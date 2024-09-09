@@ -19,9 +19,10 @@ class Historico:
             json.dump(self.dados, file, indent= 4) 
 
     
-    def adicionar_entrada(self, usuario, pergunta, resposta, acertou):
+    def adicionar_entrada(self, usuario, ip, pergunta, resposta, acertou):
         entrada = {
             "usuario": usuario,
+            "ip": ip,
             "pergunta": pergunta,
             "resposta": resposta,
             "acerto": acertou

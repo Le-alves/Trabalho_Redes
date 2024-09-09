@@ -14,8 +14,10 @@ def main(argv):
             print("Servidor conectado!")
 
             # Instancia o Cliente_Gerenciador e delega a interação
-            gerenciador = Cliente_Gerenciador(s)
-            gerenciador.menu()
+            cliente = Cliente_Gerenciador(s)
+            cliente.iniciar_conexao() #Registro do nome do cliente
+            cliente.menu()
+           
 
     except Exception as error:
         print("Exceção - Programa será encerrado!")

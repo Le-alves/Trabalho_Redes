@@ -1,6 +1,8 @@
 import socket
 from historico  import Historico
 from ranking import Ranking
+from ia_Resposta import IA_Resposta
+
 
 class Server_Gerenciador:
     
@@ -12,8 +14,20 @@ class Server_Gerenciador:
         self.palpite_correto = None  # Inicializa como None
         self.historico = Historico()
         self.ranking = Ranking()
-    
+        self.nome_usuario = None
+        self.respostas_ia = 0
+        self.respostas_humano = 0
+        self.acertos_usuario = 0
+        self.ia_resposta = IA_Resposta()
+
+    def registrar_usuario (self):
+        nome = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
+        self.nome_usuario = nome
+        print(f"Usuário {nome} registrado com sucesso!")
+        self.clientsocket.send(f"Bem-vindo, {nome}! Você foi registrado com sucesso.".encode('utf-8'))
+       
     def gerenciar_comunicacao(self):
+        self.registrar_usuario()
         try:
             while True:
                 data = self.clientsocket.recv(self.BUFFER_SIZE)
@@ -42,8 +56,9 @@ class Server_Gerenciador:
                 # Envia a resposta ao cliente
                 self.clientsocket.send(resposta.encode('utf-8')) 
 
-                # Palpite sobre quem respondeu - PASSAR ARGUMENTOS CORRETOS
+                # Palpite sobre quem respondeu 
                 self.verificar_acerto(texto_recebido, resposta)  # Aqui você passa os argumentos corretamente
+
         except Exception as e:
             print(f"Erro na comunicação com o cliente {self.addr}: {e}")
 
@@ -51,27 +66,33 @@ class Server_Gerenciador:
         print(f"Conexão com o cliente {self.addr} encerrada.")
        
     def responder_pergunta(self, pergunta):  # Acrescentar a lógica da Inteligência Artificial
+
         if input("Quem deve responder essa pergunta? (Humano = 1 | IA = 2): ") == "1":
             self.palpite_correto = "1"
+            self.respostas_humano += 1
             return input("Digite a resposta para o cliente: ")
+        
         else:
             self.palpite_correto = "2"
-            return "---------------Resposta da IA---------------"
+            self.respostas_ia += 1
+            ia_resposta = IA_Resposta()
+            return self.ia_resposta.gerar_resposta(pergunta) 
+    
 
     def verificar_acerto(self,texto_recebido, resposta):
         try:
             # Recebe o feedback do cliente
             palpite = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
-
             #Determina se o cliente acertou ou não 
             acertou = (palpite == self.palpite_correto)
+            if acertou:
+                self.acertos_usuario +=1
             
-            #Atualiza o historico com a pergunta, resposta e se o cliente acertou ou não | IP usado como identificador
-            usuario = self.addr[0]
-            self.historico.adicionar_entrada(usuario, texto_recebido, resposta, acertou) 
+            # Atualiza o histórico com a pergunta, resposta e se o cliente acertou ou não | Nome de usuário e IP usados como identificadores
+            self.historico.adicionar_entrada(self.nome_usuario, self.addr[0], texto_recebido, resposta, acertou) 
 
             #atualiza o ranking
-            self.ranking.atualizar_ranking(usuario, acertou)
+            self.ranking.atualizar_ranking(self.nome_usuario, acertou)
             
             # Verificação
             if acertou:
@@ -90,6 +111,7 @@ class Server_Gerenciador:
         try:
             # Calcula o ranking usando a classe Ranking
             ranking = self.ranking.exibir_ranking()
+            self.clientsocket.send(ranking.encode('utf-8'))
 
             # Verifica se o ranking não é None antes de enviar
             if ranking:
@@ -101,6 +123,13 @@ class Server_Gerenciador:
         except Exception as e:
             print(f"Erro ao enviar o ranking: {e}")
             self.clientsocket.send("Erro ao calcular o ranking.".encode('utf-8'))
+
+    def enviar_resumo_sessao(self):
+        resumo = (f"Resumo da Sessão:\n"
+                  f"Respostas fornecidas por IA: {self.respostas_ia}\n"
+                  f"Respostas fornecidas por Humanos: {self.respostas_humano}\n"
+                  f"Número de acertos: {self.acertos_usuario}")
+        self.clientsocket.send(resumo.encode('utf-8'))
 
        
 
