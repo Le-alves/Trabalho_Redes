@@ -68,5 +68,89 @@
         "pergunta": "oi, ta ai",
         "resposta": "to sim",
         "acerto": true
+    },
+    {
+        "usuario": "1009",
+        "ip": "127.0.0.1",
+        "pergunta": "oi, taai?",
+        "resposta": "estou sim ",
+        "acerto": true
+    },
+    {
+        "usuario": "novo",
+        "ip": "127.0.0.1",
+        "pergunta": "ola",
+        "resposta": "oii",
+        "acerto": true
+    },
+    {
+        "usuario": "pel\u00e9",
+        "ip": "127.0.0.1",
+        "pergunta": "pel\u00e9 morreu?",
+        "resposta": "sim, levou o farelo ",
+        "acerto": false
+    },
+    {
+        "usuario": "pe\u00e9",
+        "ip": "127.0.0.1",
+        "pergunta": "um p\u00e9",
+        "resposta": "\u00e9 um p\u00e9",
+        "acerto": true
+    },
+    {
+        "usuario": "novamodifica\u00e7ao",
+        "ip": "127.0.0.1",
+        "pergunta": "hehehe",
+        "resposta": "lelele",
+        "acerto": false
+    },
+    {
+        "usuario": "fewonwef",
+        "ip": "127.0.0.1",
+        "pergunta": "o mundo \u00e9 redondo",
+        "resposta": "sim",
+        "acerto": false
+    },
+    {
+        "usuario": "fewonwef",
+        "ip": "127.0.0.1",
+        "pergunta": "sair",
+        "resposta": "tchau",
+        "acerto": true
+    },
+    {
+        "usuario": "bysansa",
+        "ip": "127.0.0.1",
+        "pergunta": "fswdfq",
+        "resposta": "dsfsd",
+        "acerto": true
+    },
+    {
+        "usuario": "fwe",
+        "ip": "127.0.0.1",
+        "pergunta": "weff",
+        "resposta": "dscvda",
+        "acerto": true
+    },
+    {
+        "usuario": "cdcsdsd",
+        "ip": "127.0.0.1",
+        "pergunta": "aaaaa",
+        "resposta": "cxsc",
+        "acerto": true
+    },
+    {
+        "usuario": "cdcsdsd",
+        "ip": "127.0.0.1",
+        "pergunta": "wfwfwefweffew",
+        "resposta": "dadssds",
+        "acerto": false
+    },
+    {
+        "usuario": "csas",
+        "ip": "127.0.0.1",
+        "pergunta": "cccsa",
+        "resposta": "asdsd",
+        "acerto": true
     }
 ]

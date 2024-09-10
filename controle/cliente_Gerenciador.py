@@ -72,25 +72,17 @@ class Cliente_Gerenciador:
 
     def ver_ranking(self):
         try:
-            # Solicita o ranking ao servidor 
+            # Implementação para ver o ranking
             self.socket.send("ranking".encode('utf-8'))
-
-            # Recebe o ranking do servidor de uma vez só
-            ranking = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
-
-            if not ranking:
-                print("Erro ao receber o ranking ou o ranking está vazio.")
-            else:
-                print("\nRanking dos Usuários:\n", ranking)
+            ranking = self.socket.recv(1024).decode('utf-8')
+            self.callback_mensagem(f"Ranking: {ranking}")
 
         except Exception as e:
             print(f"Erro ao tentar visualizar o ranking: {e}")
 
 
     def sair (self):
+        # Implementação para sair
         self.socket.send("bye".encode('utf-8'))
-        resumo = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
-        print(resumo)
-        self.socket.close()
-        print("Conexão encerrada.")
-        input("Pressione Enter para fechar...")
+        resumo = self.socket.recv(1024).decode('utf-8')
+        self.callback_mensagem(f"Resumo: {resumo}")
