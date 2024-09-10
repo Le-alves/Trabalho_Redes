@@ -5,6 +5,7 @@ class Cliente_Gerenciador:
         self.socket = socket
         self.callback_mensagem = callback_mensagem  # A função de callback para exibir mensagens
         self.callback_origem = callback_origem
+        
 
     def iniciar_conexao(self):
         nome = input("Digite seu nome para registro no servidor:\n")

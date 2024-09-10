@@ -33,18 +33,12 @@ class ClienteInterface:
         self.socket_cliente = None  # O socket do cliente será inicializado após a conexão
         self.gerenciador = None  # Instância de Cliente_Gerenciador será armazenada aqui
         self.thread_receber = None  # Para armazenar a thread de recebimento de mensagens
-        #--------Esconder os espaço de pergunta----------------
-        # Cria um frame para o menu de opções
-        self.button_frame = tk.Frame(self.root)
-        self.button_frame.pack(pady=10)
-
+        
         # Inicialmente ocultar os widgets de pergunta
         self.entry_pergunta = tk.Entry(self.root, width=50)
         self.btn_enviar_pergunta = tk.Button(self.root, text="Enviar pergunta", command=self.enviar_pergunta)
-        self.entry_pergunta.pack(pady=5)
-        self.btn_enviar_pergunta.pack(pady=5)
-
-        # Escondendo os widgets de pergunta no início
+        
+        # Ocultando no início
         self.entry_pergunta.pack_forget()
         self.btn_enviar_pergunta.pack_forget()
 
@@ -86,32 +80,32 @@ class ClienteInterface:
         self.btn_conectar.pack_forget()
 
         # Título do menu
-        self.label_menu = tk.Label(self.root, text="Escolha Alguma opção do menu:")
+        self.label_menu = tk.Label(self.root, text="Escolha alguma opção do menu:")
         self.label_menu.pack(pady=10)
 
         # Criar um frame para organizar os botões lado a lado
-        button_frame = tk.Frame(self.root)
-        button_frame.pack(pady=10)
+        self.button_frame = tk.Frame(self.root)
+        self.button_frame.pack(pady=10)
 
         # Botão "Fazer Pergunta"
-        self.btn_opcao1 = tk.Button(button_frame, text="Fazer pergunta", command=self.exibir_campo_pergunta)
+        self.btn_opcao1 = tk.Button(self.button_frame, text="Fazer pergunta", command=self.exibir_campo_pergunta)
         self.btn_opcao1.grid(row=0, column=0, padx=5)
 
         # Botão "Ver Ranking"
-        self.btn_opcao2 = tk.Button(button_frame, text="Ver ranking", command=self.ver_ranking)
+        self.btn_opcao2 = tk.Button(self.button_frame, text="Ver ranking", command=self.ver_ranking)
         self.btn_opcao2.grid(row=0, column=1, padx=5)
 
         # Botão "Sair"
-        self.btn_opcao3 = tk.Button(button_frame, text="Sair", command=self.sair)
+        self.btn_opcao3 = tk.Button(self.button_frame, text="Sair", command=self.sair)
         self.btn_opcao3.grid(row=0, column=2, padx=5)
 
     def exibir_campo_pergunta(self):
-        # Campo de entrada para a pergunta
-        self.entry_pergunta = tk.Entry(self.root, width=50)
-        self.entry_pergunta.pack(pady=5)
+        # Esconder o menu de opções
+        self.button_frame.pack_forget()
+        self.label_menu.pack_forget()
 
-        # Botão para enviar a pergunta
-        self.btn_enviar_pergunta = tk.Button(self.root, text="Enviar pergunta", command=self.enviar_pergunta)
+        # Mostrar o campo de entrada para a pergunta
+        self.entry_pergunta.pack(pady=5)
         self.btn_enviar_pergunta.pack(pady=5)
 
     def enviar_pergunta(self):
@@ -136,9 +130,11 @@ class ClienteInterface:
             self.entry_pergunta.pack_forget()
             self.btn_enviar_pergunta.pack_forget()
 
+            # Voltar ao menu após enviar a pergunta
+            self.mostrar_menu()
+
     def ver_ranking(self):
         if self.gerenciador:
-            #self.mostrar_mensagem("Você escolheu ver o ranking.")
             self.gerenciador.ver_ranking()
 
     def sair(self):
@@ -149,27 +145,20 @@ class ClienteInterface:
             self.root.quit()
 
     def callback_origem(self):
-         while True:
-            # Abre uma caixa de diálogo para o usuário escolher se a resposta veio de um humano ou de uma máquina
+        while True:
             origem = simpledialog.askstring("Palpite", "Você acha que essa resposta veio de um humano ou de uma máquina? (Humano = 1 | Máquina = 2):")
-            
-            # Se a entrada for válida (1 ou 2), retornamos a resposta
             if origem in ["1", "2"]:
                 return origem
             else:
-                # Se a entrada for inválida, exibe um aviso e repete o loop
                 messagebox.showwarning("Aviso", "Por favor, insira '1' para Humano ou '2' para Máquina.")
-
 
     def receber_mensagens(self):
         while True:
             try:
-                # Usando select para verificar se há dados disponíveis no socket
                 ready_to_read, _, _ = select.select([self.socket_cliente], [], [], 1)
                 if ready_to_read:
                     resposta = self.socket_cliente.recv(1024).decode('utf-8')
                     if resposta:
-                        # Exibe a resposta do servidor na área de texto
                         self.mostrar_mensagem(f"Servidor: {resposta}")
             except Exception as e:
                 print(f"Erro ao receber mensagem do servidor: {e}")
