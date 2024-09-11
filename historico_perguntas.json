@@ -1,0 +1,16 @@
+[
+    {
+        "usuario": "lele",
+        "ip": "127.0.0.1",
+        "pergunta": "a terra plana gira?",
+        "resposta": "siim",
+        "acerto": false
+    },
+    {
+        "usuario": "123",
+        "ip": "127.0.0.1",
+        "pergunta": "123",
+        "resposta": "132213",
+        "acerto": true
+    }
+]

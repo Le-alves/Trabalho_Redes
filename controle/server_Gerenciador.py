@@ -1,29 +1,32 @@
 import socket
-from historico  import Historico
-from ranking import Ranking
-from ia_Resposta import IA_Resposta
+from controle.historico  import Historico
+from controle.ranking import Ranking
+from controle.ia_Resposta import IA_Resposta
 
 
 class Server_Gerenciador:
     
     BUFFER_SIZE = 1024
 
-    def __init__(self, clientsocket, addr):
+    def __init__(self, clientsocket, addr, log_callback, escolha_callback=None, resposta_callback=None):
         self.clientsocket = clientsocket
         self.addr = addr
-        self.palpite_correto = None  # Inicializa como None
+        self.log_callback = log_callback
+        self.escolha_callback = escolha_callback  # Callback para escolha (IA ou Humano)
+        self.resposta_callback = resposta_callback  # Callback para resposta do Humano
+        self.palpite_correto = None
         self.historico = Historico()
         self.ranking = Ranking()
         self.nome_usuario = None
         self.respostas_ia = 0
         self.respostas_humano = 0
         self.acertos_usuario = 0
-        self.ia_resposta = IA_Resposta()
+        self.ia_resposta = IA_Resposta() 
 
     def registrar_usuario (self):
         nome = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
         self.nome_usuario = nome
-        print(f"Usuário {nome} registrado com sucesso!")
+        self.log_callback(f"Usuário {nome} registrado com sucesso!")
         self.clientsocket.send(f"Bem-vindo, {nome}! Você foi registrado com sucesso.".encode('utf-8'))
        
     def gerenciar_comunicacao(self):
@@ -32,12 +35,12 @@ class Server_Gerenciador:
             while True:
                 data = self.clientsocket.recv(self.BUFFER_SIZE)
                 if not data:
-                    print('Conexão encerrada pelo cliente {}.'.format(self.addr))
+                    self.log_callback('Conexão encerrada pelo cliente {}.'.format(self.addr))
                     break
 
                 # Recebimento da mensagem do cliente    
                 texto_recebido = data.decode('utf-8')
-                print('Recebido do cliente {} na porta {}: {}'.format(self.addr[0], self.addr[1], texto_recebido))
+                self.log_callback('Recebido do cliente {} na porta {}: {}'.format(self.addr[0], self.addr[1], texto_recebido))
 
                 #Verifica se é uma solicitação de ranking
                 if texto_recebido.lower() == "ranking":
@@ -46,7 +49,7 @@ class Server_Gerenciador:
 
                 # Se a mensagem for "bye", encerrará a conexão
                 if texto_recebido.lower() == 'bye':
-                    print('Vai encerrar o socket do cliente {} !'.format(self.addr[0]))
+                    self.log_callback('Vai encerrar o socket do cliente {} !'.format(self.addr[0]))
                     self.clientsocket.send("Encerrando conexão...".encode('utf-8'))
                     break
 
@@ -57,26 +60,36 @@ class Server_Gerenciador:
                 self.clientsocket.send(resposta.encode('utf-8')) 
 
                 # Palpite sobre quem respondeu 
-                self.verificar_acerto(texto_recebido, resposta)  # Aqui você passa os argumentos corretamente
+                self.verificar_acerto(texto_recebido, resposta)  
 
         except Exception as e:
-            print(f"Erro na comunicação com o cliente {self.addr}: {e}")
+            self.log_callback(f"Erro na comunicação com o cliente {self.addr}: {e}")
 
         self.clientsocket.close()
-        print(f"Conexão com o cliente {self.addr} encerrada.")
+        self.log_callback(f"Conexão com o cliente {self.addr} encerrada.")
        
-    def responder_pergunta(self, pergunta):  # Acrescentar a lógica da Inteligência Artificial
+    def responder_pergunta(self, pergunta):  
 
-        if input("Quem deve responder essa pergunta? (Humano = 1 | IA = 2): ") == "1":
+            # Exibe a pergunta no log
+        self.log_callback(f"Pergunta recebida: {pergunta}")
+        
+        # Exibe a mensagem de escolha para o operador no log (em vez de usar input)
+        self.log_callback("Quem deve responder essa pergunta? (Humano = 1 | IA = 2)")
+        
+        # A escolha agora será feita pela interface gráfica
+        escolha = self.escolha_callback()  # Espera a escolha ser feita pela interface
+
+        if escolha == "Humano":
             self.palpite_correto = "1"
             self.respostas_humano += 1
-            return input("Digite a resposta para o cliente: ")
-        
+            resposta = self.resposta_callback()  # Espera a resposta ser inserida pela interface
         else:
             self.palpite_correto = "2"
             self.respostas_ia += 1
-            ia_resposta = IA_Resposta()
-            return self.ia_resposta.gerar_resposta(pergunta) 
+            self.log_callback(f"Resposta da IA: {resposta}")  # A IA gera a resposta
+
+        # Retorna a resposta que será enviada ao cliente
+        return resposta 
     
 
     def verificar_acerto(self,texto_recebido, resposta):
