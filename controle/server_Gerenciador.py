@@ -1,4 +1,5 @@
 import socket
+import time
 from historico  import Historico
 from ranking import Ranking
 from ia_Resposta import IA_Resposta
@@ -8,7 +9,7 @@ class Server_Gerenciador:
     
     BUFFER_SIZE = 1024
 
-    def __init__(self, clientsocket, addr):
+    def __init__(self, clientsocket, addr, tempo_espera_ia = 55):
         self.clientsocket = clientsocket
         self.addr = addr
         self.palpite_correto = None  # Inicializa como None
@@ -19,6 +20,7 @@ class Server_Gerenciador:
         self.respostas_humano = 0
         self.acertos_usuario = 0
         self.ia_resposta = IA_Resposta()
+        self.tempo_espera_ia = tempo_espera_ia
 
     def registrar_usuario (self):
         nome = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
@@ -50,14 +52,12 @@ class Server_Gerenciador:
                     self.clientsocket.send("Encerrando conexão...".encode('utf-8'))
                     break
 
-                # Responder a pergunta
+                # Se não for ranking ou bye, o servidor assume que é uma pergunta
                 resposta = self.responder_pergunta(texto_recebido)
+                self.clientsocket.send(resposta.encode('utf-8'))  # Envia a resposta ao cliente
 
-                # Envia a resposta ao cliente
-                self.clientsocket.send(resposta.encode('utf-8')) 
-
-                # Palpite sobre quem respondeu 
-                self.verificar_acerto(texto_recebido, resposta)  # Aqui você passa os argumentos corretamente
+                # Pergunta ao cliente se ele sabe quem respondeu (humano ou IA)
+                self.verificar_acerto(texto_recebido, resposta)  
 
         except Exception as e:
             print(f"Erro na comunicação com o cliente {self.addr}: {e}")
@@ -65,7 +65,7 @@ class Server_Gerenciador:
         self.clientsocket.close()
         print(f"Conexão com o cliente {self.addr} encerrada.")
        
-    def responder_pergunta(self, pergunta):  # Acrescentar a lógica da Inteligência Artificial
+    def responder_pergunta(self, pergunta):  
 
         if input("Quem deve responder essa pergunta? (Humano = 1 | IA = 2): ") == "1":
             self.palpite_correto = "1"
@@ -76,6 +76,7 @@ class Server_Gerenciador:
             self.palpite_correto = "2"
             self.respostas_ia += 1
             ia_resposta = IA_Resposta()
+            time.sleep(self.tempo_espera_ia)
             return self.ia_resposta.gerar_resposta(pergunta) 
     
 

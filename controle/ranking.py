@@ -22,12 +22,12 @@ class Ranking:
     def exibir_ranking(self):
         # Ordena os usuários pelo percentual de acertos, em ordem decrescente
         ranking = sorted(self.usuarios.items(), key=lambda x: self.calcular_percentual(x[0]), reverse=True)
-        #posicao = 1 #Inicialização da posição
+
         if not ranking:
             return "Ranking não disponível."
             
         # Inicializa uma string para armazenar o ranking formatado
-        resultado = "Ranking dos Usuários:\n"
+        resultado = ""
 
         # Percorre os usuários ordenados e constrói o ranking
         for posicao, (usuario, stats) in enumerate(ranking, start=1):

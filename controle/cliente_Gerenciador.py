@@ -1,3 +1,6 @@
+import socket
+
+
 class Cliente_Gerenciador:
     BUFFER_SIZE = 1024
 
@@ -31,21 +34,20 @@ class Cliente_Gerenciador:
     
     def fazer_pergunta(self):
         try:
-            
+                
                 texto = input("Digite o texto a ser enviado ao servidor:\n") #VERIFICAR SE O SERVER_GERENCIADOR TEM TRATAMENTO CASO RECEBA UM "BYE"
                 self.socket.send(texto.encode('utf-8'))  # Envia a pergunta ao servidor
 
                 # Recebe a resposta do servidor
-                data = self.socket.recv(self.BUFFER_SIZE)
-                if not data:
+                resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')# Converte os bytes em string
+                if not resposta:
                     print("Conexão encerrada pelo servidor.")
                     return
+                print('Resposta do servidor:', resposta)
 
-                texto_recebido = data.decode('utf-8')  # Converte os bytes em string
-                print('Recebido do servidor:', texto_recebido)
 
                 # Verifica se a conexão deve ser encerrada
-                if texto_recebido.lower() == 'encerrando conexão...':
+                if resposta.lower() == 'encerrando conexão...':
                     print('Encerrando o socket cliente!')
                     self.sair()
                     return
@@ -65,18 +67,40 @@ class Cliente_Gerenciador:
         except Exception as e:
             print(f"Erro na comunicação com o servidor: {e}")
 
+    def limpar_buffer(self):
+        try:
+            # Definir um timeout curto para leitura do buffer
+            self.socket.settimeout(0.1)  # 0.1 segundos para tentar limpar
+            while True:
+                try:
+                    dados = self.socket.recv(self.BUFFER_SIZE)
+                    if not dados:
+                        break  # Se não houver mais dados, saímos do loop
+                    
+                except socket.timeout:
+                    break  # Sai do loop quando não há mais dados no buffer
+        except Exception as e:
+            print(f"Erro ao limpar o buffer: {e}")
+        finally:
+            # Voltando para o modo sem timeout, para não afetar futuras operações
+            self.socket.settimeout(None)
+
+
+
     def ver_ranking(self):
         try:
             # Solicita o ranking ao servidor 
             self.socket.send("ranking".encode('utf-8'))
 
-            # Recebe o ranking do servidor de uma vez só
+            # Recebe e exibe o ranking do servidor
             ranking = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
 
             if not ranking:
                 print("Erro ao receber o ranking ou o ranking está vazio.")
             else:
-                print("\nRanking dos Usuários:\n", ranking)
+                print("\nRanking dos Usuários:\n", ranking)  # Exibe o ranking corretamente
+                
+            self.limpar_buffer()
 
         except Exception as e:
             print(f"Erro ao tentar visualizar o ranking: {e}")
