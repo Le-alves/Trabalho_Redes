@@ -90,13 +90,12 @@ class Cliente_Gerenciador:
             # Solicita o ranking ao servidor 
             self.socket.send("ranking".encode('utf-8'))
 
-            # Recebe e exibe o ranking do servidor
+            # Recebe  o ranking do servidor
             ranking = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
 
             if not ranking:
-                print("Erro ao receber o ranking ou o ranking está vazio.")
-            else:
-                print("\nRanking dos Usuários:\n", ranking)  # Exibe o ranking corretamente
+                return "Erro ao receber o ranking ou o ranking está vazio."
+            return ranking  # Exibe o ranking corretamente
                 
             self.limpar_buffer()
 
@@ -105,9 +104,18 @@ class Cliente_Gerenciador:
 
 
     def sair (self):
-        self.socket.send("bye".encode('utf-8'))
-        resumo = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
-        print(resumo)
-        self.socket.close()
-        print("Conexão encerrada.")
-        input("Pressione Enter para fechar...")
+
+        try:
+            # Envia a mensagem de encerramento ao servidor
+            self.socket.send("bye".encode('utf-8'))
+
+            # Recebe o resumo de encerramento do servidor
+            resumo = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
+            print(resumo)
+
+            # Fecha o socket
+            self.socket.close()
+            return "Conexão encerrada com o servidor."
+        except Exception as e:
+            return f"Erro ao encerrar a conexão: {e}"
+            
