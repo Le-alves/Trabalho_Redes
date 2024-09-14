@@ -1,86 +1,9 @@
 [
     {
-        "usuario": "le",
+        "usuario": "nmikdcnkmc",
         "ip": "127.0.0.1",
-        "pergunta": "oi",
-        "resposta": "Hello! How can I assist you today?",
-        "acerto": false
-    },
-    {
-        "usuario": "12",
-        "ip": "127.0.0.1",
-        "pergunta": "1451",
-        "resposta": "216",
-        "acerto": true
-    },
-    {
-        "usuario": "12",
-        "ip": "127.0.0.1",
-        "pergunta": "dscc",
-        "resposta": "cs5dds",
-        "acerto": false
-    },
-    {
-        "usuario": "jj",
-        "ip": "127.0.0.1",
-        "pergunta": "dixdixd",
-        "resposta": "cklmkc",
-        "acerto": true
-    },
-    {
-        "usuario": "cscd",
-        "ip": "127.0.0.1",
-        "pergunta": "saxcsax",
-        "resposta": "adca",
-        "acerto": true
-    },
-    {
-        "usuario": "cdfcds",
-        "ip": "127.0.0.1",
-        "pergunta": "sdcds",
-        "resposta": "dscds",
-        "acerto": true
-    },
-    {
-        "usuario": "cdfcds",
-        "ip": "127.0.0.1",
-        "pergunta": "156",
-        "resposta": "vdsvs",
-        "acerto": true
-    },
-    {
-        "usuario": "cxsc",
-        "ip": "127.0.0.1",
-        "pergunta": "ccc",
-        "resposta": "cscds",
-        "acerto": true
-    },
-    {
-        "usuario": "xvxc",
-        "ip": "127.0.0.1",
-        "pergunta": "cdcsd",
-        "resposta": "dsv",
-        "acerto": true
-    },
-    {
-        "usuario": "sccfcd",
-        "ip": "127.0.0.1",
-        "pergunta": "oi, ta ai?",
-        "resposta": "Sim, estou aqui! Como posso te ajudar hoje?",
-        "acerto": false
-    },
-    {
-        "usuario": "fdvx",
-        "ip": "127.0.0.1",
-        "pergunta": "oi, ta ai?",
-        "resposta": "Sim, estou aqui! Como posso ajudar voc\u00ea hoje?",
-        "acerto": false
-    },
-    {
-        "usuario": "fdvx",
-        "ip": "127.0.0.1",
-        "pergunta": "sair",
-        "resposta": "tchau",
+        "pergunta": "njcnjd",
+        "resposta": "judnd",
         "acerto": true
     }
 ]

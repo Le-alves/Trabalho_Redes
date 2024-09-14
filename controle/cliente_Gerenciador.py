@@ -1,18 +1,25 @@
 import socket
-
+from tkinter import Tk
 
 class Cliente_Gerenciador:
     BUFFER_SIZE = 1024
 
-    def __init__(self, socket):
-        self.socket = socket
+    def __init__(self, host='127.0.0.1', port=20000):
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.connect((host, port))
 
-    def iniciar_conexao(self):
-        nome = input("Digite seu nome para registro no servidor:\n")
-        self.socket.send(nome.encode('utf-8'))  # Envia o nome ao servidor
-        resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
-        print(resposta)  # Confirmação de registro
-
+    def registrar_nome(self, nome):
+        """
+        Registra o nome do usuário no servidor.
+        :param nome: Nome do usuário.
+        :return: Resposta do servidor sobre o registro.
+        """
+        try:
+            self.socket.send(nome.encode('utf-8'))  # Envia o nome ao servidor
+            resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')  # Recebe a resposta do servidor
+            return resposta  # Retorna a confirmação de registro
+        except Exception as e:
+            return f"Erro ao registrar o nome: {e}"
 
     def menu (self):
         while True:
@@ -32,40 +39,31 @@ class Cliente_Gerenciador:
             else:
                 print("Opção inválida. Tente novamente.")
     
-    def fazer_pergunta(self):
+    def fazer_pergunta(self, pergunta):
         try:
-                
-                texto = input("Digite o texto a ser enviado ao servidor:\n") #VERIFICAR SE O SERVER_GERENCIADOR TEM TRATAMENTO CASO RECEBA UM "BYE"
-                self.socket.send(texto.encode('utf-8'))  # Envia a pergunta ao servidor
+            # Envia a pergunta ao servidor
+            self.socket.send(pergunta.encode('utf-8'))
 
-                # Recebe a resposta do servidor
-                resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')# Converte os bytes em string
-                if not resposta:
-                    print("Conexão encerrada pelo servidor.")
-                    return
-                print('Resposta do servidor:', resposta)
+            # Verifica se o cliente deseja encerrar a conexão
+            if pergunta.lower() == 'bye':
+                self.sair()
+                return "Encerrando a conexão com o servidor."
 
+            # Recebe a resposta do servidor
+            resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
+            if not resposta:
+                return "Conexão encerrada pelo servidor."
 
-                # Verifica se a conexão deve ser encerrada
-                if resposta.lower() == 'encerrando conexão...':
-                    print('Encerrando o socket cliente!')
-                    self.sair()
-                    return
-                
-                # Pergunta sobre a origem da resposta
-                origem = input("Você acha que essa resposta veio de um humano ou de uma máquina? (Humano = 1 | Máquina = 2): ")
-                self.socket.send(origem.encode('utf-8'))  # Envia a resposta ao servidor
+            # Verifica se a conexão deve ser encerrada pelo servidor
+            if resposta.lower() == 'encerrando conexão...':
+                self.sair()
+                return "Encerrando o socket cliente!"
 
-                # Recebe a mensagem de acerto ou erro do servidor
-                feedback = self.socket.recv(self.BUFFER_SIZE)
-                if not feedback:
-                    print("Conexão encerrada pelo servidor.")
-                    return
+            # Retorna a resposta do servidor
+            return resposta
 
-                mensagem_feedback = feedback.decode('utf-8')
-                print('Feedback do servidor:', mensagem_feedback)
         except Exception as e:
-            print(f"Erro na comunicação com o servidor: {e}")
+            return f"Erro na comunicação com o servidor: {e}"
 
     def limpar_buffer(self):
         try:
