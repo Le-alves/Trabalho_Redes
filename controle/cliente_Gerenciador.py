@@ -95,10 +95,10 @@ class Cliente_Gerenciador:
 
             if not ranking:
                 return "Erro ao receber o ranking ou o ranking está vazio."
-            return ranking  # Exibe o ranking corretamente
-                
+    
             self.limpar_buffer()
-
+            return ranking  # Exibe o ranking corretamente
+        
         except Exception as e:
             print(f"Erro ao tentar visualizar o ranking: {e}")
 

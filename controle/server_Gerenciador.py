@@ -9,7 +9,7 @@ class Server_Gerenciador:
     
     BUFFER_SIZE = 1024
 
-    def __init__(self, clientsocket, addr, tempo_espera_ia = 55):
+    def __init__(self, clientsocket, addr, tempo_espera_ia = 55, tela_servidor=None):
         self.clientsocket = clientsocket
         self.addr = addr
         self.palpite_correto = None  # Inicializa como None
@@ -21,11 +21,17 @@ class Server_Gerenciador:
         self.acertos_usuario = 0
         self.ia_resposta = IA_Resposta()
         self.tempo_espera_ia = tempo_espera_ia
+        self.tela_servidor = tela_servidor  # Referência à interface gráfica
+
+    def log(self, mensagem):
+        """Método para exibir logs apenas na interface gráfica."""
+        if self.tela_servidor:
+            self.tela_servidor.inserir_texto(mensagem)
 
     def registrar_usuario (self):
         nome = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
         self.nome_usuario = nome
-        print(f"Usuário {nome} registrado com sucesso!")
+        self.log(f"Usuário {nome} registrado com sucesso!")
         self.clientsocket.send(f"Bem-vindo, {nome}! Você foi registrado com sucesso.".encode('utf-8'))
        
     def gerenciar_comunicacao(self):
@@ -34,12 +40,12 @@ class Server_Gerenciador:
             while True:
                 data = self.clientsocket.recv(self.BUFFER_SIZE)
                 if not data:
-                    print('Conexão encerrada pelo cliente {}.'.format(self.addr))
+                    self.log('Conexão encerrada pelo cliente {}.'.format(self.addr))
                     break
 
                 # Recebimento da mensagem do cliente    
                 texto_recebido = data.decode('utf-8')
-                print('Recebido do cliente {} na porta {}: {}'.format(self.addr[0], self.addr[1], texto_recebido))
+                self.log('Recebido do cliente {} na porta {}: {}'.format(self.addr[0], self.addr[1], texto_recebido))
 
                 #Verifica se é uma solicitação de ranking
                 if texto_recebido.lower() == "ranking":
@@ -48,7 +54,7 @@ class Server_Gerenciador:
 
                 # Se a mensagem for "bye", encerrará a conexão
                 if texto_recebido.lower() == 'bye':
-                    print('Vai encerrar o socket do cliente {} !'.format(self.addr[0]))
+                    self.log('Vai encerrar o socket do cliente {} !'.format(self.addr[0]))
                     self.clientsocket.send("Encerrando conexão...".encode('utf-8'))
                     break
 
@@ -60,10 +66,10 @@ class Server_Gerenciador:
                 self.verificar_acerto(texto_recebido, resposta)  
 
         except Exception as e:
-            print(f"Erro na comunicação com o cliente {self.addr}: {e}")
+            self.log(f"Erro na comunicação com o cliente {self.addr}: {e}")
 
         self.clientsocket.close()
-        print(f"Conexão com o cliente {self.addr} encerrada.")
+        self.log(f"Conexão com o cliente {self.addr} encerrada.")
        
     def responder_pergunta(self, pergunta):  
 
@@ -116,13 +122,13 @@ class Server_Gerenciador:
 
             # Verifica se o ranking não é None antes de enviar
             if ranking:
-                print(f"Enviando ranking ao cliente {self.addr}:")
-                print(ranking)  # Para depuração, remove depois
+                self.log(f"Enviando ranking ao cliente {self.addr}:")
+                self.log(ranking)  # Para depuração, remove depois
                 self.clientsocket.send(ranking.encode('utf-8'))
             else:
                 self.clientsocket.send("Ranking não disponível.".encode('utf-8'))
         except Exception as e:
-            print(f"Erro ao enviar o ranking: {e}")
+            self.log(f"Erro ao enviar o ranking: {e}")
             self.clientsocket.send("Erro ao calcular o ranking.".encode('utf-8'))
 
     def enviar_resumo_sessao(self):
