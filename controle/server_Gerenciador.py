@@ -9,7 +9,7 @@ class Server_Gerenciador:
     
     BUFFER_SIZE = 1024
 
-    def __init__(self, clientsocket, addr, tempo_espera_ia = 55, tela_servidor=None):
+    def __init__(self, clientsocket, addr, tempo_espera_ia = 2, tela_servidor=None):
         self.clientsocket = clientsocket
         self.addr = addr
         self.palpite_correto = None  # Inicializa como None
@@ -59,8 +59,14 @@ class Server_Gerenciador:
                     break
 
                 # Se não for ranking ou bye, o servidor assume que é uma pergunta
-                resposta = self.responder_pergunta(texto_recebido)
-                self.clientsocket.send(resposta.encode('utf-8'))  # Envia a resposta ao cliente
+                self.tela_servidor.exibir_pergunta(texto_recebido, self)  # Exibe a pergunta na interface gráfica
+
+                # Obter a resposta (isso depende da escolha Humano ou IA)
+                if self.tela_servidor.quem_responde == "Humano":
+                    resposta = self.tela_servidor.input_resposta.get()  # Resposta digitada pelo humano
+                else:
+                    resposta = self.ia_resposta.gerar_resposta(texto_recebido)  # Resposta gerada pela IA
+                    time.sleep(self.tempo_espera_ia)  # Simula o tempo de resposta da IA
 
                 # Pergunta ao cliente se ele sabe quem respondeu (humano ou IA)
                 self.verificar_acerto(texto_recebido, resposta)  
@@ -71,47 +77,52 @@ class Server_Gerenciador:
         self.clientsocket.close()
         self.log(f"Conexão com o cliente {self.addr} encerrada.")
        
-    def responder_pergunta(self, pergunta):  
-
-        if input("Quem deve responder essa pergunta? (Humano = 1 | IA = 2): ") == "1":
+    def receber_resposta(self, quem_responde, resposta=None):
+        """Processa a resposta enviada pelo cliente (Humano ou IA)."""
+        if quem_responde == "Humano":
             self.palpite_correto = "1"
             self.respostas_humano += 1
-            return input("Digite a resposta para o cliente: ")
-        
+            self.clientsocket.send(resposta.encode('utf-8'))
         else:
             self.palpite_correto = "2"
             self.respostas_ia += 1
-            ia_resposta = IA_Resposta()
             time.sleep(self.tempo_espera_ia)
-            return self.ia_resposta.gerar_resposta(pergunta) 
+            resposta_ia = self.ia_resposta.gerar_resposta(self.tela_servidor.pergunta_atual)
+            self.clientsocket.send(resposta_ia.encode('utf-8')) 
     
 
-    def verificar_acerto(self,texto_recebido, resposta):
+    def verificar_acerto(self, texto_recebido, resposta):
+        """Verifica se o cliente acertou o palpite sobre quem respondeu (Humano ou IA)."""
         try:
-            # Recebe o feedback do cliente
+            # Recebe o feedback do cliente sobre quem ele acha que respondeu
             palpite = self.clientsocket.recv(self.BUFFER_SIZE).decode('utf-8')
-            #Determina se o cliente acertou ou não 
-            acertou = (palpite == self.palpite_correto)
-            if acertou:
-                self.acertos_usuario +=1
-            
-            # Atualiza o histórico com a pergunta, resposta e se o cliente acertou ou não | Nome de usuário e IP usados como identificadores
-            self.historico.adicionar_entrada(self.nome_usuario, self.addr[0], texto_recebido, resposta, acertou) 
 
-            #atualiza o ranking
-            self.ranking.atualizar_ranking(self.nome_usuario, acertou)
+            # Verifica se o palpite está correto com base em quem realmente respondeu (palpite_correto)
+            acertou = (palpite == self.palpite_correto)
+
+            if acertou:
+                self.acertos_usuario += 1
             
-            # Verificação
+            # Atualiza o histórico com a pergunta, resposta e se o cliente acertou ou não
+            self.historico.adicionar_entrada(self.nome_usuario, self.addr[0], texto_recebido, resposta, acertou)
+
+            # Atualiza o ranking
+            self.ranking.atualizar_ranking(self.nome_usuario, acertou)
+
+            # Mensagem de feedback para o cliente
             if acertou:
                 mensagem = "Parabéns, você acertou!"
             else:
-                mensagem = "Você errou"
+                mensagem = "Você errou."
 
             # Envia a mensagem ao cliente
             self.clientsocket.send(mensagem.encode('utf-8'))
 
+            # Exibe a mensagem de feedback na interface do servidor
+            self.log(f"Palpite do cliente: {'Correto' if acertou else 'Incorreto'} - {mensagem}")
+
         except Exception as e:
-            print(f"Erro ao processar o feedback: {e}")
+            self.log(f"Erro ao processar o feedback: {e}")
 
     def enviar_ranking(self):
 

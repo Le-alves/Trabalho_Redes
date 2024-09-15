@@ -8,47 +8,67 @@ class TelaServidor:
         self.root = root
         self.root.title("Servidor - Teste de Turing")
 
-        # Caixa de texto para exibir os logs do servidor
-        self.output_texto = scrolledtext.ScrolledText(self.root, height=15, width=70)
-        self.output_texto.grid(row=0, column=0, padx=10, pady=10)
+        # Configura o grid para organizar melhor os widgets
+        self.root.grid_columnconfigure(0, weight=1)
+        self.root.grid_columnconfigure(1, weight=1)
 
-        # Área para exibir perguntas recebidas
-        self.label_pergunta = tk.Label(self.root, text="Pergunta recebida:")
-        self.label_pergunta.grid(row=1, column=0, padx=10, pady=10)
+        # Campo para informar o tempo de espera da IA
+        self.label_tempo = tk.Label(self.root, text="Informe o tempo de espera para IA:", font=('Arial', 12, 'bold'))
+        self.label_tempo.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-        self.pergunta_recebida = tk.Label(self.root, text="")
-        self.pergunta_recebida.grid(row=2, column=0, padx=10, pady=10)
+        self.input_tempo = tk.Entry(self.root, font=('Arial', 12))
+        self.input_tempo.grid(row=0, column=1, padx=10, pady=5, sticky="e")
 
-        # Botões para escolher quem vai responder (Humano ou IA)
-        self.botao_humano = tk.Button(self.root, text="Humano", command=self.escolher_humano, state='disabled')
-        self.botao_humano.grid(row=3, column=0, padx=5, pady=5)
+        self.btn_iniciar = tk.Button(self.root, text="Iniciar", command=self.iniciar_servidor, bg='green', fg='white', font=('Arial', 12, 'bold'))
+        self.btn_iniciar.grid(row=0, column=2, padx=10, pady=5, sticky="w")
 
-        self.botao_ia = tk.Button(self.root, text="IA", command=self.escolher_ia, state='disabled')
-        self.botao_ia.grid(row=3, column=1, padx=5, pady=5)
+        # Caixa de texto para exibir logs
+        self.output_texto = scrolledtext.ScrolledText(self.root, height=15, width=60, font=('Courier', 12))
+        self.output_texto.grid(row=1, column=0, columnspan=3, padx=10, pady=5)
 
-        # Campo para entrada manual da resposta (se Humano for escolhido)
-        self.label_resposta = tk.Label(self.root, text="Digite a resposta:", state='disabled')
-        self.label_resposta.grid(row=4, column=0, padx=10, pady=10)
+        # Botões de escolha: Humano ou IA
+        self.label_escolha = tk.Label(self.root, text="Quem deve responder?", font=('Arial', 12, 'bold'))
+        self.label_escolha.grid(row=2, column=0, padx=10, pady=5, sticky="w")
 
-        self.input_resposta = tk.Entry(self.root, state='disabled')
-        self.input_resposta.grid(row=5, column=0, padx=10, pady=10)
+        self.botao_humano = tk.Button(self.root, text="Humano", command=self.escolher_humano, state='disabled', font=('Arial', 12, 'bold'))
+        self.botao_humano.grid(row=2, column=1, padx=10, pady=5)
+
+        self.botao_ia = tk.Button(self.root, text="IA", command=self.escolher_ia, state='disabled', font=('Arial', 12, 'bold'))
+        self.botao_ia.grid(row=2, column=2, padx=10, pady=5)
+
+        # Campo de entrada para a resposta manual do operador
+        self.label_resposta = tk.Label(self.root, text="Digite a resposta:", font=('Arial', 12, 'bold'), state='disabled')
+        self.label_resposta.grid(row=3, column=0, padx=10, pady=5, sticky="w")
+
+        self.input_resposta = tk.Entry(self.root, font=('Arial', 12), state='disabled')
+        self.input_resposta.grid(row=3, column=1, columnspan=2, padx=10, pady=5, sticky="e")
 
         # Botão para enviar a resposta
-        self.botao_enviar_resposta = tk.Button(self.root, text="Enviar Resposta", command=self.enviar_resposta, state='disabled')
-        self.botao_enviar_resposta.grid(row=6, column=0, padx=10, pady=10)
+        self.botao_enviar_resposta = tk.Button(self.root, text="Enviar Resposta", command=self.enviar_resposta, state='disabled', bg='gray', fg='white', font=('Arial', 12, 'bold'))
+        self.botao_enviar_resposta.grid(row=4, column=2, padx=10, pady=10, sticky="e")
+
+        # Status label
+        self.status_label = tk.Label(self.root, text="Status: Aguardando", font=('Arial', 12), fg='red')
+        self.status_label.grid(row=5, column=0, columnspan=3, pady=10)
 
         # Variáveis de controle
         self.gerenciador_atual = None
         self.quem_responde = None
         self.pergunta_atual = ""
 
+    def iniciar_servidor(self):
+        # Iniciar servidor
+        self.status_label.config(text="Servidor iniciado", fg='green')
+        self.inserir_texto("Servidor foi iniciado com sucesso.")
+
     def exibir_pergunta(self, pergunta, gerenciador):
         """Exibe a pergunta recebida e permite escolher quem responde."""
         self.pergunta_atual = pergunta
         self.gerenciador_atual = gerenciador
-        self.pergunta_recebida.config(text=pergunta)
-        
-        # Habilita os botões de escolha e o campo de resposta
+        self.inserir_texto(f"Pergunta: {pergunta}")
+        self.root.title(f"Servidor - Pergunta: {pergunta[:30]}...")  # Atualiza o título com a pergunta
+
+        # Habilita os botões de escolha
         self.botao_humano.config(state='normal')
         self.botao_ia.config(state='normal')
 
@@ -58,6 +78,7 @@ class TelaServidor:
         self.label_resposta.config(state='normal')
         self.input_resposta.config(state='normal')
         self.botao_enviar_resposta.config(state='normal')
+        self.status_label.config(text="Modo: Humano", fg='blue')
 
     def escolher_ia(self):
         """Define que a IA vai responder."""
@@ -65,15 +86,21 @@ class TelaServidor:
         self.label_resposta.config(state='disabled')
         self.input_resposta.config(state='disabled')
         self.botao_enviar_resposta.config(state='normal')
+        self.status_label.config(text="Modo: IA", fg='orange')
 
     def enviar_resposta(self):
         """Envia a resposta ao Server_Gerenciador."""
         if self.quem_responde == "Humano":
             resposta = self.input_resposta.get()
             self.gerenciador_atual.receber_resposta("Humano", resposta)
+            self.inserir_texto(f"Resposta do humano: {resposta}")
+            self.status_label.config(text="Resposta enviada (Humano)", fg='blue')
         else:
-            self.gerenciador_atual.receber_resposta("IA")
-        
+            resposta = self.gerenciador_atual.ia_resposta.gerar_resposta(self.pergunta_atual)
+            self.gerenciador_atual.receber_resposta("IA", resposta)
+            self.inserir_texto(f"Resposta da IA: {resposta}")
+            self.status_label.config(text="Resposta enviada (IA)", fg='orange')
+
         # Desabilitar os botões e campos novamente após enviar a resposta
         self.botao_humano.config(state='disabled')
         self.botao_ia.config(state='disabled')
@@ -87,37 +114,9 @@ class TelaServidor:
         self.output_texto.insert(tk.END, mensagem + "\n")
         self.output_texto.yview(tk.END)  # Scroll automático para o final
 
+
 def iniciar_interface_servidor():
     # Função para iniciar a interface gráfica do servidor
     root = tk.Tk()
     tela_servidor = TelaServidor(root)
-
-    # Entrada para o tempo de espera da IA
-    label_tempo = tk.Label(root, text="Informe o tempo de espera para respostas da IA (em segundos):")
-    label_tempo.grid(row=1, column=0, padx=10, pady=10)
-
-    input_tempo = tk.Entry(root)
-    input_tempo.grid(row=2, column=0, padx=10, pady=10)
-
-    def start_server():
-        """Função para iniciar o servidor com o tempo de espera da IA informado."""
-        try:
-            tempo_espera_ia = float(input_tempo.get())
-            tela_servidor.inserir_texto(f"Tempo de espera configurado: {tempo_espera_ia} segundos")
-
-            # Importar a função iniciar_servidor
-            from tcp_server import iniciar_servidor
-
-            # Iniciar o servidor em uma thread separada para não bloquear a interface
-            server_thread = Thread(target=iniciar_servidor, args=(tempo_espera_ia, tela_servidor))
-            server_thread.start()
-
-        except ValueError:
-            tela_servidor.inserir_texto("Erro: O tempo de espera deve ser um número.")
-
-    # Botão para iniciar o servidor
-    btn_iniciar = tk.Button(root, text="Iniciar Servidor", command=start_server)
-    btn_iniciar.grid(row=3, column=0, padx=10, pady=10)
-
-    # Inicia o loop da interface gráfica
     root.mainloop()

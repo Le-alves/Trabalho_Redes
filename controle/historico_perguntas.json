@@ -215,5 +215,26 @@
         "pergunta": "eggegfe",
         "resposta": "fdwsdfs",
         "acerto": false
+    },
+    {
+        "usuario": "sa",
+        "ip": "127.0.0.1",
+        "pergunta": "dasd",
+        "resposta": "Hello! How can I assist you today?",
+        "acerto": false
+    },
+    {
+        "usuario": "das",
+        "ip": "127.0.0.1",
+        "pergunta": "213",
+        "resposta": "Hello! How can I assist you today?",
+        "acerto": false
+    },
+    {
+        "usuario": "das",
+        "ip": "127.0.0.1",
+        "pergunta": "oi",
+        "resposta": "Hello! How can I assist you today?",
+        "acerto": true
     }
 ]
