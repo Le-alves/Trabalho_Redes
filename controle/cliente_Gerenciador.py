@@ -44,20 +44,10 @@ class Cliente_Gerenciador:
             # Envia a pergunta ao servidor
             self.socket.send(pergunta.encode('utf-8'))
 
-            # Verifica se o cliente deseja encerrar a conexão
-            if pergunta.lower() == 'bye':
-                self.sair()
-                return "Encerrando a conexão com o servidor."
-
             # Recebe a resposta do servidor
             resposta = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
             if not resposta:
                 return "Conexão encerrada pelo servidor."
-
-            # Verifica se a conexão deve ser encerrada pelo servidor
-            if resposta.lower() == 'encerrando conexão...':
-                self.sair()
-                return "Encerrando o socket cliente!"
 
             # Retorna a resposta do servidor
             return resposta
@@ -101,6 +91,22 @@ class Cliente_Gerenciador:
         
         except Exception as e:
             print(f"Erro ao tentar visualizar o ranking: {e}")
+    
+    def enviar_palpite(self, palpite):
+        """
+        Envia o palpite do usuário ao servidor e recebe o feedback.
+        :param palpite: Palpite do usuário ('1' para humano, '2' para IA).
+        :return: Feedback do servidor sobre o palpite.
+        """
+        try:
+            # Envia o palpite ao servidor
+            self.socket.send(palpite.encode('utf-8'))
+            
+            # Recebe o feedback do servidor
+            feedback = self.socket.recv(self.BUFFER_SIZE).decode('utf-8')
+            return feedback
+        except Exception as e:
+            return f"Erro ao enviar o palpite: {e}"
 
 
     def sair (self):

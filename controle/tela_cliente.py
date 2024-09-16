@@ -150,31 +150,35 @@ class TelaCliente:
             # Limpa o campo de pergunta
             self.input_pergunta.delete(0, tk.END)
 
-            # Loop de validação para aceitar apenas "1" ou "2"
-            origem = None
-            
-            while origem not in ("1", "2"):
-                origem = tk.simpledialog.askstring(
-                    "Origem", 
-                    "Você acha que a resposta veio de um humano ou de uma máquina? (Humano = 1 | Máquina = 2): "
-                )
-                
-                if origem not in ("1", "2"):
-                    messagebox.showerror("Entrada Inválida", "Por favor, insira '1' para humano ou '2' para máquina.")
-
-            if origem:
-                # Chama o método `fazer_pergunta` para enviar a escolha ao servidor
-                feedback = self.cliente_gerenciador.fazer_pergunta(origem)
-
-                # Exibe o feedback do servidor
-                self.output_texto.insert(tk.END, f"Feedback: {feedback}\n")
-
-            self.output_texto.yview_moveto(1)  # Move a barra de rolagem para o final
-            
-            # Volta para o menu após o feedback
-            self.mostrar_menu()  # Aqui chamamos o menu de novo
+            # Chama o método para enviar o palpite
+            self.enviar_palpite()
         else:
             messagebox.showwarning("Atenção", "Digite uma pergunta para enviar.")
+    
+    def enviar_palpite(self):
+        # Loop de validação para aceitar apenas "1" ou "2"
+        origem = None
+        
+        while origem not in ("1", "2"):
+            origem = tk.simpledialog.askstring(
+                "Origem", 
+                "Você acha que a resposta veio de um humano ou de uma máquina? (Humano = 1 | Máquina = 2): "
+            )
+            
+            if origem not in ("1", "2"):
+                messagebox.showerror("Entrada Inválida", "Por favor, insira '1' para humano ou '2' para máquina.")
+
+        if origem:
+            # Envia o palpite ao servidor e recebe o feedback
+            feedback = self.cliente_gerenciador.enviar_palpite(origem)
+
+            # Exibe o feedback do servidor
+            self.output_texto.insert(tk.END, f"Feedback: {feedback}\n")
+
+        self.output_texto.yview_moveto(1)  # Move a barra de rolagem para o final
+                
+        # Volta para o menu após o feedback
+        self.mostrar_menu()
 
     def sair(self):
         # Envia a solicitação de encerramento ao servidor

@@ -3,6 +3,7 @@ Ministrada pelo professor: Felipe Ribeiro
 Aluno: Lê Alves 
 
 Informações importantes sobre este trabalho: 
+Todo o funcionamento está ocorrendo quando abrimos os executávei "tcp_server" e "tcp_cliente", respectivamente. 
 
 Resumo das Tarefas:
 Acesso à IA generativa: Garantir o acesso a uma IA generativa via API.
